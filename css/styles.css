@@ -1,0 +1,695 @@
+/*
+ * Google Keep styles.
+ * Images live in ../assets. Class names use kebab-case and match index.html.
+ *
+ * Order: tokens, base, header, layout, composer, notes, tooltips, editor,
+ * then narrow screens and reduced motion.
+ */
+
+/* Tokens */
+:root {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --text: #202124;
+  --text-soft: #3c4043;
+  --muted: #5f6368;
+  --placeholder: #80868b;
+  --border: #e0e0e0;
+  --fill: #f1f3f4;
+  --fill-hover: #e8eaed;
+  --active: #feefc3;
+  --accent: #fbbc04;
+  --accent-hover: #f9ab00;
+  --focus: #1a73e8;
+  --tooltip: #202124;
+  --overlay: rgba(32, 33, 36, 0.46);
+  --shadow: 0 1px 2px rgba(60, 64, 67, 0.16), 0 1px 3px rgba(60, 64, 67, 0.12);
+  --shadow-hover: 0 1px 3px rgba(60, 64, 67, 0.22), 0 6px 16px rgba(60, 64, 67, 0.16);
+  --header-height: 64px;
+  --sidebar-width: 220px;
+  --content-width: 960px;
+  --composer-width: 600px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --font: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+::placeholder {
+  color: var(--placeholder);
+  opacity: 1;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+/* Shared controls */
+.search-label,
+.note-field-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.search-input:focus,
+.note-title-input:focus,
+.note-content-input:focus,
+.nav-button:focus-visible,
+.add-note-button:focus-visible,
+.archive-note-button:focus-visible,
+.unarchive-note-button:focus-visible,
+.modal-cancel-button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Header */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-height: var(--header-height);
+  padding: 8px 20px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.app-title {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 500;
+}
+
+.app-title::before {
+  content: "";
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: var(--radius);
+  background: url("../assets/favicon.png") center / cover no-repeat;
+}
+
+.note-search {
+  display: block;
+  flex: 1;
+  max-width: 720px;
+}
+
+.search-form {
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  height: 46px;
+  padding: 0 16px 0 42px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background-color: var(--fill);
+  background-image: url("../assets/search.svg");
+  background-repeat: no-repeat;
+  background-position: 14px center;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.search-input:hover {
+  background-color: var(--fill-hover);
+}
+
+.search-input:focus {
+  background-color: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+/* Layout */
+.app-layout {
+  display: flex;
+  align-items: flex-start;
+  min-height: calc(100vh - var(--header-height));
+}
+
+.sidebar {
+  position: sticky;
+  z-index: 5;
+  top: var(--header-height);
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  padding: 12px 12px 12px 0;
+}
+
+.sidebar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-button {
+  width: 100%;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 0 24px 24px 0;
+  background: transparent;
+  font-weight: 500;
+  text-align: left;
+  transition: background-color 0.15s ease;
+}
+
+.nav-button:hover {
+  background: var(--fill-hover);
+}
+
+.nav-button-active,
+.nav-button[aria-current="page"] {
+  background: var(--active);
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  max-width: calc(var(--content-width) + 48px);
+  margin-right: auto;
+  padding: 32px 24px 64px;
+}
+
+/* Composer */
+.note-creator {
+  max-width: var(--composer-width);
+  margin: 0 auto 32px;
+}
+
+.creator-heading,
+.section-heading {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.note-form,
+.note-modal-form {
+  position: relative;
+}
+
+.note-form {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.note-form:hover,
+.note-form:focus-within {
+  border-color: var(--border);
+  box-shadow: var(--shadow-hover);
+}
+
+.note-title-input,
+.note-content-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+}
+
+.note-title-input {
+  padding: 10px 2px 2px;
+  font-weight: 600;
+}
+
+.note-content-input {
+  min-height: 64px;
+  padding: 6px 2px;
+  resize: vertical;
+}
+
+.note-title-input:focus,
+.note-content-input:focus {
+  outline-offset: 0;
+}
+
+.add-note-button {
+  align-self: flex-end;
+  margin-top: 8px;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 4px;
+  background: var(--accent);
+  font-weight: 600;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.add-note-button:hover {
+  background: var(--accent-hover);
+}
+
+.add-note-button:active {
+  transform: translateY(1px);
+}
+
+.add-note-button:disabled,
+.add-note-button:disabled:hover,
+.add-note-button:disabled:active {
+  background: var(--fill);
+  color: var(--placeholder);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Note lists */
+.notes-section,
+.archive-section {
+  margin-top: 8px;
+}
+
+.notes-section:has(.notes-list:empty) .section-heading,
+.archive-section:has(.notes-list:empty) .section-heading {
+  text-align: center;
+}
+
+.notes-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.notes-list:empty {
+  display: none;
+}
+
+.note-item {
+  position: relative;
+  min-width: 0;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.note-item:hover,
+.note-item:focus-within {
+  z-index: 2;
+}
+
+.note-item:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.note-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 148px;
+  padding: 16px 16px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.15s ease;
+}
+
+.note-card:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.note-card-title {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.note-card-title:empty {
+  display: none;
+}
+
+.note-card-content {
+  flex: 1;
+  margin: 0;
+  color: var(--text-soft);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.note-card-actions,
+.note-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.note-card-actions {
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.archive-note-button,
+.unarchive-note-button,
+.modal-cancel-button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.archive-note-button:hover,
+.unarchive-note-button:hover,
+.modal-cancel-button:hover {
+  background: var(--fill);
+  color: var(--text);
+}
+
+#notes-section .unarchive-note-button,
+#archive-section .archive-note-button {
+  display: none;
+}
+
+.empty-message {
+  max-width: 28rem;
+  margin: 28px auto 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Tooltips */
+.has-tooltip {
+  position: relative;
+}
+
+.has-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  z-index: 30;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  width: max-content;
+  max-width: 220px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  background: var(--tooltip);
+  color: var(--surface);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.3;
+  text-align: center;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-50%) translateY(4px);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.has-tooltip:disabled::after {
+  content: none;
+}
+
+/* Under the control, so the tip does not cover the note text. */
+.note-card-actions .has-tooltip::after,
+.note-modal-actions .has-tooltip::after {
+  top: calc(100% + 8px);
+  bottom: auto;
+  left: auto;
+  right: 0;
+  transform: translateY(-4px);
+}
+
+#note-modal-archive-button.has-tooltip::after {
+  right: auto;
+  left: 0;
+}
+
+.has-tooltip:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.note-card-actions .has-tooltip:focus-visible::after,
+.note-modal-actions .has-tooltip:focus-visible::after {
+  transform: translateY(0);
+}
+
+/* Beside the button. The header sits directly above Notes and would cover a tip above it. */
+.nav-button.has-tooltip::after {
+  top: 50%;
+  bottom: auto;
+  left: calc(100% + 10px);
+  transform: translateY(-50%) translateX(-4px);
+}
+
+.nav-button.has-tooltip:focus-visible::after {
+  transform: translateY(-50%) translateX(0);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .has-tooltip:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    transition-delay: 0.4s;
+  }
+
+  .nav-button.has-tooltip:hover::after {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+
+  .note-card-actions .has-tooltip:hover::after,
+  .note-modal-actions .has-tooltip:hover::after {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Note editor */
+.note-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 16px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  display: grid;
+  place-items: center;
+}
+
+.note-modal-backdrop {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border: none;
+  background: var(--overlay);
+  cursor: pointer;
+  animation: note-backdrop-in 0.18s ease;
+}
+
+.note-modal-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(560px, 100%);
+  max-height: calc(100vh - 32px);
+  padding: 20px 20px 52px;
+  overflow: auto;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-hover);
+  animation: note-modal-in 0.18s ease;
+}
+
+.note-modal-heading {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.note-modal-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.note-modal-form .note-content-input {
+  min-height: 140px;
+}
+
+.note-modal-actions {
+  justify-content: flex-end;
+  margin: 12px 0 0;
+}
+
+#note-modal-archive-button {
+  margin-right: auto;
+  padding: 8px 10px;
+}
+
+.note-modal-actions .add-note-button {
+  margin-top: 0;
+}
+
+.modal-cancel-button {
+  padding: 8px 14px;
+  font-size: 1rem;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+@keyframes note-backdrop-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes note-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Narrow screens */
+@media (max-width: 720px) {
+  .app-header {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+
+  .note-search {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    position: static;
+    width: 100%;
+    padding: 8px 16px 0;
+  }
+
+  .sidebar-list {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .nav-button {
+    width: auto;
+    padding: 10px 16px;
+    border-radius: 24px;
+    text-align: center;
+  }
+
+  .main-content {
+    max-width: none;
+    padding: 20px 16px 40px;
+  }
+
+  .notes-list {
+    grid-template-columns: 1fr;
+  }
+
+  /* Below the view buttons, clear of the header. */
+  .nav-button.has-tooltip::after {
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px);
+  }
+
+  .nav-button.has-tooltip:focus-visible::after {
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (max-width: 720px) {
+  .nav-button.has-tooltip:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

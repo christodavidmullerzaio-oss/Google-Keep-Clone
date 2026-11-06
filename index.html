@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Google Keep</title>
+    <link rel="icon" href="assets/favicon.png" type="image/png" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <script type="module" src="js/app.js"></script>
+  </head>
+  <body>
+    <!-- Page shell: header, sidebar, and the note lists. -->
+    <div id="app" class="app">
+      <header id="app-header" class="app-header">
+        <h1 id="app-title" class="app-title">Keep</h1>
+        <search id="note-search" class="note-search">
+          <form id="search-form" class="search-form">
+            <label id="search-label" class="search-label" for="search-input">Search notes</label>
+            <input
+              id="search-input"
+              class="search-input"
+              type="search"
+              name="query"
+              placeholder="Search notes"
+              autocomplete="off"
+            />
+          </form>
+        </search>
+      </header>
+
+      <div id="app-layout" class="app-layout">
+        <nav id="sidebar" class="sidebar" aria-label="Note views">
+          <ul id="sidebar-list" class="sidebar-list">
+            <li class="sidebar-item">
+              <button
+                id="notes-nav-button"
+                class="nav-button nav-button-active has-tooltip"
+                type="button"
+                aria-current="page"
+                data-tooltip="Show your notes"
+              >
+                Notes
+              </button>
+            </li>
+            <li class="sidebar-item">
+              <button
+                id="archive-nav-button"
+                class="nav-button has-tooltip"
+                type="button"
+                data-tooltip="Show archived notes"
+              >
+                Archive
+              </button>
+            </li>
+          </ul>
+        </nav>
+
+        <main id="main-content" class="main-content">
+          <section id="note-creator" class="note-creator" aria-labelledby="creator-heading">
+            <h2 id="creator-heading" class="creator-heading">Add a note</h2>
+            <form id="note-form" class="note-form">
+              <label id="note-title-label" class="note-field-label" for="note-title-input">
+                Title
+              </label>
+              <input
+                id="note-title-input"
+                class="note-title-input"
+                type="text"
+                name="title"
+                placeholder="Title"
+              />
+
+              <label id="note-content-label" class="note-field-label" for="note-content-input">
+                Note
+              </label>
+              <textarea
+                id="note-content-input"
+                class="note-content-input"
+                name="content"
+                placeholder="Take a note..."
+                rows="3"
+              ></textarea>
+
+              <button
+                id="add-note-button"
+                class="add-note-button has-tooltip"
+                type="submit"
+                data-tooltip="Save this note (Ctrl+Enter)"
+                disabled
+              >
+                Add note
+              </button>
+            </form>
+          </section>
+
+          <section id="notes-section" class="notes-section" aria-labelledby="notes-heading">
+            <h2 id="notes-heading" class="section-heading">Notes</h2>
+            <ul id="notes-list" class="notes-list"></ul>
+            <p id="notes-empty-message" class="empty-message" role="status">
+              No notes yet. Add one above.
+            </p>
+          </section>
+
+          <section
+            id="archive-section"
+            class="archive-section"
+            aria-labelledby="archive-heading"
+            hidden
+          >
+            <h2 id="archive-heading" class="section-heading">Archive</h2>
+            <ul id="archive-list" class="notes-list"></ul>
+            <p id="archive-empty-message" class="empty-message" role="status">
+              No archived notes.
+            </p>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- Editor opened from a note card. It sits outside #app so the page can be made inert. -->
+    <dialog id="note-modal" class="note-modal" aria-labelledby="note-modal-heading" aria-modal="true" hidden>
+      <button type="button" class="note-modal-backdrop" data-close-modal aria-label="Close note"></button>
+      <div id="note-modal-dialog" class="note-modal-dialog">
+        <h2 id="note-modal-heading" class="note-modal-heading">Edit note</h2>
+        <form id="note-modal-form" class="note-modal-form">
+          <label id="note-modal-title-label" class="note-field-label" for="note-modal-title-input">
+            Title
+          </label>
+          <input
+            id="note-modal-title-input"
+            class="note-title-input"
+            type="text"
+            name="title"
+            placeholder="Title"
+          />
+          <label id="note-modal-content-label" class="note-field-label" for="note-modal-content-input">
+            Note
+          </label>
+          <textarea
+            id="note-modal-content-input"
+            class="note-content-input"
+            name="content"
+            placeholder="Take a note..."
+            rows="6"
+          ></textarea>
+          <footer class="note-modal-actions">
+            <button
+              id="note-modal-archive-button"
+              class="archive-note-button has-tooltip"
+              type="button"
+              data-tooltip="Move this note to the archive"
+            >
+              Archive
+            </button>
+            <button
+              id="note-modal-cancel-button"
+              class="modal-cancel-button has-tooltip"
+              type="button"
+              data-close-modal
+              data-tooltip="Close without saving"
+            >
+              Cancel
+            </button>
+            <button
+              id="note-modal-save-button"
+              class="add-note-button has-tooltip"
+              type="submit"
+              data-tooltip="Save your changes (Ctrl+Enter)"
+            >
+              Save
+            </button>
+          </footer>
+        </form>
+      </div>
+    </dialog>
+
+    <!-- Copied by js/app.js for each saved note. -->
+    <template id="note-card-template">
+      <li class="note-item" tabindex="0">
+        <article class="note-card">
+          <h3 class="note-card-title"></h3>
+          <p class="note-card-content"></p>
+          <footer class="note-card-actions">
+            <button
+              class="archive-note-button has-tooltip"
+              type="button"
+              data-action="archive"
+              data-tooltip="Move this note to the archive"
+            >
+              Archive
+            </button>
+            <button
+              class="unarchive-note-button has-tooltip"
+              type="button"
+              data-action="unarchive"
+              data-tooltip="Move this note back to your notes"
+            >
+              Unarchive
+            </button>
+          </footer>
+        </article>
+      </li>
+    </template>
+  </body>
+</html>
